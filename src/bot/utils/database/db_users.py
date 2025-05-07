@@ -2,17 +2,18 @@ import sqlite3
 from contextlib import contextmanager
 from typing import Generator, Any
 
-DATABASE_PATH = 'database.db'
+DATABASE_PATH = 'bot\settings\database.db'
 # Устанавливаем соединение с базой данных
 connection = sqlite3.connect(DATABASE_PATH)
 cursor = connection.cursor()
 
 # Создаем таблицу Users
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS Users (
-id INTEGER PRIMARY KEY,
-balance INTEGER NOT NULL,
-last_msg_sup TEXT
+    CREATE TABLE IF NOT EXISTS Users (
+    id INTEGER PRIMARY KEY,
+    balance INTEGER NOT NULL,
+    last_msg_sup TEXT,
+    block INTEGER NOT NULL
 )
 ''')
 
@@ -35,7 +36,6 @@ def get_db() -> Generator[sqlite3.Cursor, None, None]:
         cursor.close()
         connection.close()
 
-# Example database functions using the context manager
 def add_user(user_id: int) -> None:
     with get_db() as cursor:
         # Проверяем существует ли пользователь
@@ -43,15 +43,15 @@ def add_user(user_id: int) -> None:
         if cursor.fetchone() is None:
             # Если пользователя нет - добавляем
             cursor.execute(
-                "INSERT INTO Users (id, balance, last_msg_sup) VALUES (?, ?, ?)",
-                (user_id, 0, None)
+                "INSERT INTO Users (id, balance, last_msg_sup, block) VALUES (?, ?, ?, ?)",
+                (user_id, 0, None, 0)
             )
 
 
 def get_user(user_id: int) -> Any:
     with get_db() as cursor:
-        cursor.execute("SELECT * FROM USERS WHERE id = ?", (user_id,))
-        return cursor.fetchone()
+        cursor.execute("SELECT * FROM Users WHERE id = ?", (user_id,))
+        return cursor.fetchall()
 
 def update_user_balance(user_id: int, amount: int,funk: str) -> bool:
     with get_db() as cursor:
@@ -67,3 +67,14 @@ def update_user_balance(user_id: int, amount: int,funk: str) -> bool:
 def update_last_time_user(user_id: int, last_msg_sup: str) -> None:
     with get_db() as cursor:
         cursor.execute("UPDATE Users SET last_msg_sup = ? WHERE id = ?", (last_msg_sup, user_id))        
+
+
+def user_mn(block: int, user_id: int) -> None:
+    with get_db() as cursor:
+        cursor.execute("UPDATE Users SET block = ? WHERE id = ?",(block, user_id))
+
+def get_all_active_users() -> list[int]:
+    """Получает список ID всех незаблокированных пользователей"""
+    with get_db() as cursor:
+        cursor.execute("SELECT id FROM Users WHERE block = 0")
+        return [row[0] for row in cursor.fetchall()]        

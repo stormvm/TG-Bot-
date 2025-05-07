@@ -6,4 +6,4 @@ router = Router()
 
 @router.callback_query(F.data == "back_to_main")
 async def handle_rerun_command(callback: CallbackQuery):
-    await callback.message.answer("Возвращаю вас в меню",reply_markup=start_keyboard)
+    await callback.message.edit_text("Возвращаю вас в меню",reply_markup=start_keyboard)

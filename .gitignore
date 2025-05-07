@@ -14,7 +14,7 @@ __pycache__/
 
 # Локальные настройки
 config.py
-
+test.py
 # IDE
 .vscode/
 .idea/

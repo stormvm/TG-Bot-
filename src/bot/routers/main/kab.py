@@ -8,7 +8,7 @@ router = Router()
 async def cabinet_command_handler(callback: CallbackQuery):
     user_data = get_user(callback.from_user.id) 
     balance = user_data[1] if user_data else 0  
-    await callback.message.answer(
+    await callback.message.edit_text(
         f"Привет, вот твой личный кабинет!\n"
         f"Юзер: {callback.from_user.id}\n"
         f"Баланс: {balance} руб.",

@@ -3,7 +3,7 @@ import sqlite3
 from contextlib import contextmanager
 from typing import Generator, Any, List, Optional
 import json
-DATABASE_PATH = 'database.db'
+DATABASE_PATH = 'bot\settings\database.db'
 # Устанавливаем соединение с базой данных
 connection = sqlite3.connect(DATABASE_PATH)
 cursor = connection.cursor()

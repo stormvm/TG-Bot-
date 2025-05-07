@@ -14,7 +14,9 @@ router = Router()
 
 @router.callback_query(F.data == 'support')
 async def callback_support(callback: CallbackQuery, state: FSMContext):
-    data = get_user(callback.from_user.id)[2]
+    dataaa = get_user(callback.from_user.id)
+    for i in data:
+        data = i[2]
     current_time = datetime.now()
     
     if data == 'None':
@@ -47,12 +49,12 @@ async def callback_support(callback: CallbackQuery, state: FSMContext):
         ))
 
         await state.set_state(Create_support_message.waiting_for_message)
-        await callback.message.answer(
+        await callback.message.edit_text(
             "Напишите ваше сообщение в поддержку\nВы можете прикрепить фото или видео",
             reply_markup=builder.as_markup()
         )
     else:
-        await callback.answer(
+        await callback.message.edit_text(
             f"Вы сможете отправить следующее сообщение через {hours_left:.1f} часов",
             show_alert=True
         )
@@ -147,7 +149,7 @@ async def send_support_message(callback: CallbackQuery, state: FSMContext):
     )
     
     # Отправляем подтверждение пользователю
-    await callback.message.answer(f"Ваше сообщение #{message_id} отправлено в поддержку")
+    await callback.message.edit_text(f"Ваше сообщение #{message_id} отправлено в поддержку")
     await callback.message.delete()
     
     # Сохраняем время последнего сообщения
